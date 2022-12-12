@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.secret_key = 'hello'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/flask'
@@ -58,6 +60,16 @@ def get_courses():
 
 
 
+#get route to fetch all the data from database order by semester
+@app.route('/getsemester', methods = ['GET'])
+def get_semester():
+    all_Courses = Courses.query.order_by(Courses.Semester).all()
+    result = courses_schema.dump(all_Courses)
+    return jsonify(result)
+    
+
+
+
 
 #get route to fetch specific data in database
 @app.route('/get/<id>', methods = ['GET'])
@@ -66,6 +78,12 @@ def post_course(id):
     return course_schema.jsonify(course)
 
 
+
+#get route to fetch data by semesters in database
+@app.route('/getsemester/<sm>', methods = ['GET'])
+def post_semester(sm):
+    course = Courses.query.filter_by(Semester = sm).all()
+    return courses_schema.jsonify(course)
 
 
 
